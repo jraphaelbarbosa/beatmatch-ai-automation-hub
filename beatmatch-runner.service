@@ -1,0 +1,14 @@
+[Unit]
+Description=BeatMatch AI Host Script Runner
+After=network.target
+
+[Service]
+Type=simple
+User=Usuario
+WorkingDirectory=/home/Usuario/beatmatch_ai_automation_hub
+ExecStart=/home/Usuario/beatmatch_ai_automation_hub/venv/bin/python /home/Usuario/beatmatch_ai_automation_hub/src/host_runner.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

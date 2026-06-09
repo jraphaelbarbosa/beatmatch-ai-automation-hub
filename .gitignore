@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Environment & Secrets (NEVER commit these)
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Databases
+*.db
+*.bak
+*.sqlite
+*.wal
+*.shm
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+.claude/
+.gemini/
+
+# Node
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Playwright & Caches
+.cache/
+.playwright-browsers/
+
+# Misc
+deploy.zip
+logs/
+*.log

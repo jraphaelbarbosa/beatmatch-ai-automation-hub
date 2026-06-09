@@ -1,0 +1,203 @@
+{
+  "updatedAt": "2026-06-07T03:00:00.000Z",
+  "createdAt": "2026-06-07T03:00:00.000Z",
+  "id": "beatmatch-unified-scouter",
+  "name": "BeatMatchAI - Unified Artist Scouting & CRM Integration",
+  "description": "Orchestrates YouTube comment scraper, Spotipy active miner, Playwright crawlers, SIPA Quality Clean, and Monday.com GraphQL sync.",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyDay",
+              "hour": 1
+            }
+          ]
+        }
+      },
+      "id": "trigger-id",
+      "name": "Schedule Trigger (01:00 AM)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/node/beatmatch_hub/src/scrapers/youtube_scraper.py"
+      },
+      "id": "yt-scraper-id",
+      "name": "1. YouTube Comment Scraper",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/node/beatmatch_hub/src/scrapers/apify_twitter.py"
+      },
+      "id": "twitter-scraper-id",
+      "name": "2. Apify Twitter Search Scraper",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/node/beatmatch_hub/src/scrapers/spotify_miner.py"
+      },
+      "id": "spotify-miner-id",
+      "name": "3. Spotipy Active Miner (Low Popularity)",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        0,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/node/beatmatch_hub/src/enrichers/spotify_resolver.py"
+      },
+      "id": "spotify-resolver-id",
+      "name": "4. Spotify ID & Name Resolver",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        200,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/node/beatmatch_hub/src/enrichers/instagram_finder.py"
+      },
+      "id": "ig-finder-id",
+      "name": "5. Playwright Instagram Crawler",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        400,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/node/beatmatch_hub/src/quality/sipa_cleaner.py --action apply --fake-action delete"
+      },
+      "id": "sipa-cleaner-id",
+      "name": "6. SIPA Quality & Cleansing Gate",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        600,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "command": "python3 /home/node/beatmatch_hub/src/utils/export_to_monday.py"
+      },
+      "id": "monday-export-id",
+      "name": "7. Monday.com GraphQL Exporter",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        800,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (01:00 AM)": {
+      "main": [
+        [
+          {
+            "node": "1. YouTube Comment Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. YouTube Comment Scraper": {
+      "main": [
+        [
+          {
+            "node": "2. Apify Twitter Search Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Apify Twitter Search Scraper": {
+      "main": [
+        [
+          {
+            "node": "3. Spotipy Active Miner (Low Popularity)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Spotipy Active Miner (Low Popularity)": {
+      "main": [
+        [
+          {
+            "node": "4. Spotify ID & Name Resolver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Spotify ID & Name Resolver": {
+      "main": [
+        [
+          {
+            "node": "5. Playwright Instagram Crawler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Playwright Instagram Crawler": {
+      "main": [
+        [
+          {
+            "node": "6. SIPA Quality & Cleansing Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. SIPA Quality & Cleansing Gate": {
+      "main": [
+        [
+          {
+            "node": "7. Monday.com GraphQL Exporter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

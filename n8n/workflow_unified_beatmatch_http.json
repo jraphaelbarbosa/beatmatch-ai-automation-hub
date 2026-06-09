@@ -1,0 +1,701 @@
+{
+  "updatedAt": "2026-06-08T04:30:00.000Z",
+  "createdAt": "2026-06-08T04:30:00.000Z",
+  "id": "jTq7ifi1Tn9XHjbr",
+  "name": "BeatMatchAI - Unified Artist Scouting & CRM Integration (HTTP Runner)",
+  "description": "Orchestrates YouTube comment scraper, Spotipy active miner, Playwright crawlers, SIPA Quality Clean, and Monday.com GraphQL sync via Host Runner API and Supabase database nodes.",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ESTEIRA DE INGESTÃO (ASYNCHRONOUS MINING)\nParalelização dos scrapers iniciais e inserção na fila de leads.",
+        "height": 450,
+        "width": 1050,
+        "color": 6
+      },
+      "id": "sticky-ingestion-id",
+      "name": "Sticky Note Ingestao",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        -430
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## ESTEIRA DE ENRIQUECIMENTO & IA QUALITY GATE\nFila do Supabase, resolução de Spotify IDs, crawling de Instagram e validação de critérios.",
+        "height": 480,
+        "width": 2900,
+        "color": 7
+      },
+      "id": "sticky-enrichment-id",
+      "name": "Sticky Note Enrichment",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        150
+      ]
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyDay",
+              "hour": 1
+            }
+          ]
+        }
+      },
+      "id": "trigger-id",
+      "name": "Schedule Trigger (01:00 AM)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5000/run/youtube_scraper",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HOST_RUNNER_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "yt-scraper-id",
+      "name": "1. YT Comments + Gemini 2.5 Flash Classifier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -500,
+        -350
+      ],
+      "iconUrl": "https://img.icons8.com/color/48/youtube-play.png"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "table": "artists",
+        "fields": [
+          "name",
+          "youtube_channel",
+          "status"
+        ]
+      },
+      "id": "supabase-insert-yt-id",
+      "name": "Supabase - Insert YT Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -150,
+        -350
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5000/run/apify_twitter",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HOST_RUNNER_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "twitter-scraper-id",
+      "name": "2. Apify Twitter Search Scraper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -500,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "table": "artists",
+        "fields": [
+          "name",
+          "status"
+        ]
+      },
+      "id": "supabase-insert-twitter-id",
+      "name": "Supabase - Insert Twitter Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -150,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5000/run/spotify_miner",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HOST_RUNNER_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "spotify-miner-id",
+      "name": "3. Spotipy Active Miner (Low Popularity)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -550,
+        -50
+      ],
+      "iconUrl": "https://img.icons8.com/color/48/spotify.png"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "string"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.genre }}",
+              "rightValue": "pop, edm, techno, funk",
+              "operator": "string.notContains"
+            },
+            {
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "duquesa, derek, ryu the runner, jovem dex, sonder",
+              "operator": "string.notContains"
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "genre-blacklist-filter-id",
+      "name": "Genre & Artist Blacklist",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -50
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "table": "artists",
+        "fields": [
+          "name",
+          "spotify_id",
+          "status"
+        ]
+      },
+      "id": "supabase-insert-spotify-id",
+      "name": "Supabase - Insert Spotify Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -50,
+        -50
+      ]
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyMinute",
+              "value": 5
+            }
+          ]
+        }
+      },
+      "id": "cron-queue-id",
+      "name": "Cron Trigger - Processing Queue (Every 5m)",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "table": "artists",
+        "returnAll": true,
+        "filters": {
+          "combineType": "any",
+          "conditions": [
+            {
+              "key": "status",
+              "operator": "eq",
+              "value": "pending_spotify"
+            },
+            {
+              "key": "status",
+              "operator": "eq",
+              "value": "pending_instagram"
+            }
+          ]
+        }
+      },
+      "id": "supabase-get-pending-id",
+      "name": "Supabase - Get Pending Artists",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5000/run/spotify_resolver",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HOST_RUNNER_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "spotify-resolver-id",
+      "name": "4. Spotify ID & Name Resolver",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -200,
+        250
+      ],
+      "iconUrl": "https://img.icons8.com/color/48/spotify.png"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5000/run/instagram_finder",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HOST_RUNNER_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ig-finder-id",
+      "name": "5. Playwright Instagram Crawler",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        100,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "string"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.instagram_url }}",
+              "rightValue": "instagram.com",
+              "operator": "string.contains"
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-yahoo-found-id",
+      "name": "IF - Yahoo Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        350,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Decodes Bing redirect payload if Yahoo fails\nconst decoded = Buffer.from($json.bing_redirect_payload || '', 'base64').toString('utf-8');\nreturn { instagram_url: decoded, id: $json.id, monthly_listeners: $json.monthly_listeners, max_song_views: $json.max_song_views };"
+      },
+      "id": "bing-decoder-id",
+      "name": "Bing Base64 Redirect Decoder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        550,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "table": "artists",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "key": "id",
+              "operator": "eq",
+              "value": "={{$json.id}}"
+            }
+          ]
+        }
+      },
+      "id": "supabase-fetch-metrics-id",
+      "name": "Supabase - Fetch Metrics",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        800,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "type": "string"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.monthly_listeners }}",
+              "rightValue": 8000,
+              "operator": "number.lessThanOrEqual"
+            },
+            {
+              "leftValue": "={{ $json.max_song_views }}",
+              "rightValue": 10000,
+              "operator": "number.lessThanOrEqual"
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if-criteria-id",
+      "name": "IF - Underground Criteria",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1050,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": "artists",
+        "id": "={{$json.id}}",
+        "fields": [
+          "status"
+        ]
+      },
+      "id": "supabase-update-skipped-id",
+      "name": "Supabase - Mark skipped_too_famous",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5000/run/sipa_cleaner",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HOST_RUNNER_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"args\": [\"--action\", \"apply\", \"--fake-action\", \"delete\"]\n}",
+        "options": {}
+      },
+      "id": "sipa-cleaner-id",
+      "name": "6. Gemini 2.5 Flash - Talent Semantic Classifier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1300,
+        100
+      ],
+      "iconUrl": "https://img.icons8.com/fluency/48/gemini-ai.png"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5000/run/export_to_monday",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.HOST_RUNNER_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "monday-export-id",
+      "name": "7. Monday.com GraphQL Exporter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1550,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "table": "artists",
+        "id": "={{$json.id}}",
+        "fields": [
+          "status"
+        ]
+      },
+      "id": "supabase-update-processed-id",
+      "name": "Supabase - Mark processed",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1800,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (01:00 AM)": {
+      "main": [
+        [
+          {
+            "node": "1. YT Comments + Gemini 2.5 Flash Classifier",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "2. Apify Twitter Search Scraper",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "3. Spotipy Active Miner (Low Popularity)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. YT Comments + Gemini 2.5 Flash Classifier": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Insert YT Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Apify Twitter Search Scraper": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Insert Twitter Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Spotipy Active Miner (Low Popularity)": {
+      "main": [
+        [
+          {
+            "node": "Genre & Artist Blacklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Genre & Artist Blacklist": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Insert Spotify Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron Trigger - Processing Queue (Every 5m)": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Get Pending Artists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Get Pending Artists": {
+      "main": [
+        [
+          {
+            "node": "4. Spotify ID & Name Resolver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Spotify ID & Name Resolver": {
+      "main": [
+        [
+          {
+            "node": "5. Playwright Instagram Crawler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. Playwright Instagram Crawler": {
+      "main": [
+        [
+          {
+            "node": "IF - Yahoo Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Yahoo Found?": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Fetch Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bing Base64 Redirect Decoder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bing Base64 Redirect Decoder": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Fetch Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Fetch Metrics": {
+      "main": [
+        [
+          {
+            "node": "IF - Underground Criteria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Underground Criteria": {
+      "main": [
+        [
+          {
+            "node": "6. Gemini 2.5 Flash - Talent Semantic Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supabase - Mark skipped_too_famous",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Gemini 2.5 Flash - Talent Semantic Classifier": {
+      "main": [
+        [
+          {
+            "node": "7. Monday.com GraphQL Exporter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7. Monday.com GraphQL Exporter": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Mark processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

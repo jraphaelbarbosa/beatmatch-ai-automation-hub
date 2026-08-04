@@ -1,5 +1,7 @@
 # 🏆 BeatMatch AI Automation Hub
 
+> **[ 🇧🇷 Ler em Português ](README.pt-br.md)**
+
 An enterprise-grade, autonomous data engineering and AI orchestration pipeline designed to discover, verify, clean, and enrich rising independent music talent. 
 
 This project demonstrates advanced **AI Automation**, integrating custom Python microservices, Playwright crawlers, LLM classification (Gemini), and CRM dispatching (Monday.com), all orchestrated asynchronously by **n8n** running on a Google Cloud VPS.
@@ -82,6 +84,8 @@ beatmatch_ai_automation_hub/
 1. **Environment Setup**:
    Clone the repository and install the Python dependencies.
    ```bash
+   git clone https://github.com/jraphaelbarbosa/beatmatch-ai-automation-hub.git
+   cd beatmatch-ai-automation-hub
    python -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt

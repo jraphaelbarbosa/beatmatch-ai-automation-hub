@@ -5,7 +5,8 @@ Enforces validation and serialization across scrapers, enrichers, and quality en
 
 from datetime import datetime, timezone
 from typing import Literal
-from pydantic import BaseModel, Field, field_validator
+
+from pydantic import BaseModel, Field
 
 
 class ArtistRecord(BaseModel):

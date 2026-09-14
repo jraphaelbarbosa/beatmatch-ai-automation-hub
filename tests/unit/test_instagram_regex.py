@@ -3,7 +3,6 @@ Unit tests for Instagram regex matching and handle normalization.
 """
 
 import re
-import pytest
 
 INSTAGRAM_REGEX = re.compile(r'https?://(?:www\.)?instagram\.com/([a-zA-Z0-9_.]+)')
 

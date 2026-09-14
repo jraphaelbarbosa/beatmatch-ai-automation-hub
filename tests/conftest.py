@@ -3,7 +3,7 @@ Pytest global fixtures and configurations for BeatMatch AI Automation Hub test s
 """
 
 import pytest
-from src.models.schemas import ArtistRecord, LeadDiscoveryPayload, QualityMetrics
+from src.models.schemas import ArtistRecord, LeadDiscoveryPayload
 
 
 @pytest.fixture

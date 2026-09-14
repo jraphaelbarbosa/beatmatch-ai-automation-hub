@@ -1,7 +1,8 @@
-import os
-import sys
-import re
 import logging
+import os
+import re
+import sys
+
 from dotenv import load_dotenv
 
 # Reconfigure stdout to accept UTF-8 to prevent 'charmap' errors on Windows
@@ -70,10 +71,10 @@ def discover_target_videos(queries=None, min_views=30000):
         "drake type beat"
     ]
     
-    from datetime import datetime, timedelta
-    import urllib.request
-    import urllib.parse
     import json
+    import urllib.parse
+    import urllib.request
+    from datetime import datetime, timedelta
     
     # Target date: 1 year ago in RFC 3339 format (ISO 8601)
     published_after = (datetime.utcnow() - timedelta(days=365)).strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -146,9 +147,9 @@ def scrape_youtube_comments(video_urls=None, max_comments=100):
     urls = video_urls or DEFAULT_VIDEO_URLS
     comments_found = []
     
-    import urllib.request
-    import urllib.parse
     import json
+    import urllib.parse
+    import urllib.request
     
     for url in urls:
         video_id_match = re.search(r"v=([a-zA-Z0-9_-]+)", url)

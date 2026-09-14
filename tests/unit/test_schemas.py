@@ -4,7 +4,10 @@ Unit tests for data contracts in BeatMatch AI Automation Hub.
 
 import pytest
 from pydantic import ValidationError
-from src.models.schemas import ArtistRecord, LeadDiscoveryPayload, QualityMetrics, HostRunnerJob
+from src.models.schemas import (
+    ArtistRecord,
+    QualityMetrics,
+)
 
 
 def test_artist_record_valid(sample_artist_record):

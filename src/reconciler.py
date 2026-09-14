@@ -1,7 +1,7 @@
-import sys
 import os
+import sys
+
 import psycopg2
-from datetime import datetime
 
 # Reconfigure stdout to accept UTF-8 to prevent 'charmap' errors on Windows
 if sys.stdout.encoding != 'utf-8':
@@ -14,6 +14,7 @@ if sys.stdout.encoding != 'utf-8':
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.utils.db import get_connection
 
+
 def insert_discovered_lead(name, spotify_id=None, spotify_url=None, instagram_url=None, twitter_url=None, youtube_channel=None, source="youtube_comment"):
     """
     Inserts a newly discovered lead into the master queue table.
@@ -22,7 +23,7 @@ def insert_discovered_lead(name, spotify_id=None, spotify_url=None, instagram_ur
     try:
         conn = get_connection()
         cursor = conn.cursor()
-    except (ValueError, psycopg2.OperationalError) as e:
+    except (ValueError, psycopg2.OperationalError):
         logger_name = "reconciler"
         print(f"⚠️ [MOCK DB] DATABASE_URL missing or connection failed. Mocking lead insert for '{name}' (source: {source}).")
         return ("mock_id", "pending_spotify")

@@ -1,16 +1,18 @@
+import argparse
 import os
 import sys
-import argparse
 from datetime import datetime
+
 import pandas as pd
 
 # Ensure project root is in python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from src.utils.db import get_connection
 
+
 def run_sipa_engine(action, fake_action, dedup_strategy):
     print("=" * 70)
-    print(f"[*] BEATMATCHAI AUTOMATION HUB - SIPA QUALITY ENGINE")
+    print("[*] BEATMATCHAI AUTOMATION HUB - SIPA QUALITY ENGINE")
     print(f"Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Execution Mode: {action.upper()}")
     print(f"Fake Action: {fake_action.upper()}")

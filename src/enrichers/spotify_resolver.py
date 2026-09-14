@@ -1,14 +1,15 @@
+import logging
 import os
+import random
 import sys
 import time
-import random
-import logging
+
 from dotenv import load_dotenv
 
 # Ensure project root is in the path for absolute imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from src.reconciler import get_pending_queue, transition_status, insert_discovered_lead
+from src.reconciler import get_pending_queue, insert_discovered_lead, transition_status
 from src.utils.db import get_connection
 
 # Configure Logging

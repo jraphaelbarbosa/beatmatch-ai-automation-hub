@@ -1,8 +1,9 @@
 import os
 import time
+
 import psycopg2
-from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
+from psycopg2.extras import RealDictCursor
 
 load_dotenv()
 
@@ -40,10 +41,9 @@ def execute_query(query, params=None, fetch=False):
     """
     conn = get_connection()
     try:
-        with conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute(query, params)
-                if fetch:
-                    return cur.fetchall()
+        with conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute(query, params)
+            if fetch:
+                return cur.fetchall()
     finally:
         conn.close()

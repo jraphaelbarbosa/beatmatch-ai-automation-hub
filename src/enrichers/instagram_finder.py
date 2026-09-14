@@ -1,16 +1,17 @@
-import os
-import sys
-import re
-import time
-import random
 import logging
+import os
+import random
+import re
+import sys
+import time
 import urllib.parse
+
 from dotenv import load_dotenv
 
 # Ensure project root is in the path for absolute imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from src.reconciler import get_pending_queue, transition_status, insert_discovered_lead
+from src.reconciler import get_pending_queue, transition_status
 from src.utils.db import get_connection
 
 # Configure Logging
@@ -43,8 +44,8 @@ def get_max_youtube_views(artist_name):
         return 0
         
     try:
-        import urllib.request
         import json
+        import urllib.request
         
         # Search for artist name + "music"
         query = urllib.parse.quote(f"{artist_name} music")
@@ -265,8 +266,7 @@ def find_instagram_via_search(artist_name):
                                 qs = urllib.parse.parse_qs(parsed.query)
                                 if "u" in qs:
                                     u_val = qs["u"][0]
-                                    if u_val.startswith("a1"):
-                                        u_val = u_val[2:]
+                                    u_val = u_val.removeprefix("a1")
                                     padding = len(u_val) % 4
                                     if padding:
                                         u_val += "=" * (4 - padding)

@@ -1,9 +1,10 @@
+import json
+import logging
 import os
 import sys
-import json
-import urllib.request
 import urllib.parse
-import logging
+import urllib.request
+
 from dotenv import load_dotenv
 
 # Ensure project root is in the path

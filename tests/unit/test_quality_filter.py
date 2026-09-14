@@ -2,8 +2,6 @@
 Unit tests for SIPA quality cleaning heuristics and fake detection.
 """
 
-import pytest
-import pandas as pd
 
 
 def is_fake_candidate(name: str, popularity: int, followers: int) -> bool:

@@ -5,11 +5,12 @@ creates columns (Spotify ID, Popularity, Followers, Instagram, Twitter,
 Top Tracks, Scouting Source, and Status) if they do not exist.
 """
 
-import sys
-import os
 import json
-import urllib.request
+import os
+import sys
 import urllib.error
+import urllib.request
+
 from dotenv import load_dotenv
 
 # Reconfigure stdout to accept UTF-8 to prevent 'charmap' errors on Windows

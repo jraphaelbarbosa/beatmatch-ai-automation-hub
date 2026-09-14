@@ -1,7 +1,8 @@
-import os
-import sys
-import re
 import logging
+import os
+import re
+import sys
+
 from dotenv import load_dotenv
 
 # Reconfigure stdout to accept UTF-8 to prevent 'charmap' errors on Windows

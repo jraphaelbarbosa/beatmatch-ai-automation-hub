@@ -6,8 +6,10 @@ table and the 'v_artists_analytics' view for Power BI telemetry.
 
 import os
 import sys
+
 import psycopg2
 from dotenv import load_dotenv
+
 
 def run_db_setup():
     # Load environment variables from .env file if present

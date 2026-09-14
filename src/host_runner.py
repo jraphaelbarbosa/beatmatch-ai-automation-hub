@@ -1,9 +1,10 @@
 import os
-import sys
 import subprocess
-from flask import Flask, request, jsonify
+import sys
 from threading import Thread
+
 from dotenv import load_dotenv
+from flask import Flask, jsonify, request
 
 # Load environment variables from parent folder
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

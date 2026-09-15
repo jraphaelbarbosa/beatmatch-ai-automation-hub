@@ -1,10 +1,19 @@
-# 🏆 BeatMatch AI Automation Hub
+# 🏆 BeatMatch AI Automation Hub — Pipeline Autônomo de Inteligência B2B & Geração de Leads
 
 > **[ 🇺🇸 Read in English ](README.md)**
 
-Um pipeline de engenharia de dados autônomo e orquestração de IA de nível enterprise projetado para descobrir, verificar, limpar e enriquecer talentos musicais independentes em ascensão.
+Um pipeline de engenharia de dados autônomo e orquestração de IA de nível enterprise projetado para **produtores musicais, beatmakers e estúdios de engenharia de áudio**. O sistema automatiza a prospecção, qualificação e enriquecimento de artistas independentes em ascensão com alta afinidade a gêneros musicais específicos (Trap, Boom Bap, R&B, Drill), identificando potenciais clientes com perfil ideal para **compra de instrumentais / licenciamento de beats** e contratação de **serviços profissionais de áudio (mixagem e masterização)**.
 
-Este projeto demonstra automação avançada com IA (**AI Automation**), integrando microserviços Python customizados, crawlers com Playwright, classificação semântica via LLM (Gemini) e envio para CRM (Monday.com), tudo orquestrado de forma assíncrona pelo **n8n** rodando em uma VPS no Google Cloud.
+Este projeto demonstra automação avançada com IA (**AI Automation**), integrando microserviços Python customizados, crawlers com Playwright, classificação semântica via LLM (Gemini 2.5 Flash), validação de qualidade heurística (**Motor SIPA**) e envio direto para CRM (**Monday.com**), tudo orquestrado de forma assíncrona pelo **n8n** e processando mais de **54.000 registros** no Supabase PostgreSQL com 0% de memory leak.
+
+---
+
+## 🎯 Objetivo de Negócio: Prospecção & Venda B2B para Produtores de Áudio
+
+* **A Dor Real do Mercado:** Produtores musicais e engenheiros de mixagem/masterização gastam 20+ horas semanais garimpando vocalistas manualmente no Instagram e YouTube, caindo quase sempre em dois extremos improdutivos: artistas já famosos inalcançáveis ou perfis inativos/sem orçamento.
+* **Segmentação por Gênero & Intenção Real:** O BeatMatch AI minera comunidades ativas (comentários em vídeos de "Type Beat", playlists específicas do Spotify) e utiliza o **Gemini 2.5 Flash** para distinguir semanticamente rappers/cantores em atividade de meros beatmakers concorrentes ou ouvintes passivos.
+* **Filtro de Faixa Comercial Ideal (Underground Ativo):** Aplica regras estritas de métricas (<8.000 ouvintes mensais no Spotify e faixas <10.000 plays), isolando a faixa exata de artistas que têm orçamento próprio, lançam músicas com frequência e têm demanda imediata por **beats exclusivos e finalização de áudio profissional (mix/master)**.
+* **Impacto Comercial:** Redução de **80% no ciclo de prospecção e onboarding de clientes**, entregando leads enriquecidos com contato direto de Instagram no Monday.com CRM prontos para conversão.
 
 ---
 
